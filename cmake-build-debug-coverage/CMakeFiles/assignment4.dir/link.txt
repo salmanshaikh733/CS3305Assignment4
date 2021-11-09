@@ -1,0 +1,1 @@
+/usr/bin/cc --coverage -g   CMakeFiles/assignment4.dir/assignment4.c.o  -o assignment4 
