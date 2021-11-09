@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 static const int CHUNK_SIZE = 500;
 
@@ -38,58 +39,64 @@ int main() {
         int remainingBurst[CHUNK_SIZE];
         int timeQuantum;
 
-        int lineOffSet =0;
-        int numProcesses =-1;
+        int lineOffSet = 0;
+        int numProcesses = -1;
 
         while (strToken != NULL) {
             //process name
             if (strToken[0] == 'p' || strToken[0] == 'P') {
-                printf("%s\n",strToken);
+                printf("%s\n", strToken);
                 numProcesses++;
-                lineOffSet=0;
+                lineOffSet = 0;
             }
 
             //arrival time
-            if(lineOffSet == 1) {
-                printf("%s\n",strToken);
-                arrivalTimes[numProcesses]= atoi(strToken);
+            if (lineOffSet == 1) {
+                printf("%s\n", strToken);
+                arrivalTimes[numProcesses] = atoi(strToken);
             }
 
             //burst time
-            if(lineOffSet == 2) {
-                printf("%s\n",strToken);
+            if (lineOffSet == 2) {
+                printf("%s\n", strToken);
                 burstTimes[numProcesses] = atoi(strToken);
+                remainingBurst[numProcesses] = atoi(strToken);
             }
 
             //time quantum
-            if(lineOffSet == 3) {
-                printf("%s\n",strToken);
+            if (lineOffSet == 3) {
+                printf("%s\n", strToken);
                 timeQuantum = atoi(strToken);
                 printf("\n");
+
                 //determine time calculations here
-
-                int limit =0;
-                int sum=0;
+                int limit = 0;
+                int sum = 0;
+                bool flag = false;
                 //for every process in the test case
-                while (limit < numProcesses) {
-                    if(burstTimes[limit] <= timeQuantum && burstTimes[limit] > 0) {
-                        sum = sum + burstTimes[limit];
-                        remainingBurst[limit] =0;
+                while (limit <= numProcesses) {
+                    if (remainingBurst[limit] <= timeQuantum && remainingBurst[limit] > 0) {
+                        sum = sum + remainingBurst[limit];
+                        remainingBurst[limit] = 0;
+                        flag=true;
 
-
-                    } else if(burstTimes[limit] > 0 ) {
-                        remainingBurst[limit] = burstTimes[limit] - timeQuantum;
+                    } else if (remainingBurst[limit] > 0) {
+                        remainingBurst[limit] = remainingBurst[limit] - timeQuantum;
                         sum = sum + timeQuantum;
                     }
-                }
+                    if (remainingBurst[limit] == 0 && flag==true) {
+                        printf("Process: P%d Arrival Time: %d Burst time: %d Waiting Time: %d Turnaround Time: %d\n",
+                               limit + 1, arrivalTimes[limit], burstTimes[limit],
+                               sum - arrivalTimes[limit] - burstTimes[limit], sum - arrivalTimes[limit]);
 
-                if(remainingBurst[limit]==0) {
-                    printf()
+                        flag=false;
+                        limit++;
+                    }
                 }
 
 
             }
-            strToken=strtok(NULL," ");
+            strToken = strtok(NULL, " ");
             lineOffSet++;
         }
     }
