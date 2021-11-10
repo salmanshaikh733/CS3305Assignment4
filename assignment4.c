@@ -45,56 +45,81 @@ int main() {
         while (strToken != NULL) {
             //process name
             if (strToken[0] == 'p' || strToken[0] == 'P') {
-                printf("%s\n", strToken);
                 numProcesses++;
                 lineOffSet = 0;
             }
 
             //arrival time
             if (lineOffSet == 1) {
-                printf("%s\n", strToken);
                 arrivalTimes[numProcesses] = atoi(strToken);
             }
 
             //burst time
             if (lineOffSet == 2) {
-                printf("%s\n", strToken);
                 burstTimes[numProcesses] = atoi(strToken);
                 remainingBurst[numProcesses] = atoi(strToken);
             }
 
             //time quantum
             if (lineOffSet == 3) {
-                printf("%s\n", strToken);
                 timeQuantum = atoi(strToken);
-                printf("\n");
 
                 //determine time calculations here
-                int limit = 0;
+                int correctNumProcesses = numProcesses+1;
+                int sumTurnAroundTime=0;
+                int totalWaitTime=0;
+                float avgWaitTime;
+                float avgTurnAroundTime;
+                int waitingTimes[correctNumProcesses];
+                int turnAroundTimes[correctNumProcesses];
+                int i = 0;
                 int sum = 0;
+                int n = 0;
                 bool flag = false;
                 //for every process in the test case
-                while (limit <= numProcesses) {
-                    if (remainingBurst[limit] <= timeQuantum && remainingBurst[limit] > 0) {
-                        sum = sum + remainingBurst[limit];
-                        remainingBurst[limit] = 0;
+                while ( n <correctNumProcesses) {
+                    if (remainingBurst[i] <= timeQuantum && remainingBurst[i] > 0) {
+                        sum = sum + remainingBurst[i];
+                        remainingBurst[i] = 0;
                         flag=true;
 
-                    } else if (remainingBurst[limit] > 0) {
-                        remainingBurst[limit] = remainingBurst[limit] - timeQuantum;
+                    } else if (remainingBurst[i] > 0) {
+                        remainingBurst[i] = remainingBurst[i] - timeQuantum;
                         sum = sum + timeQuantum;
                     }
-                    if (remainingBurst[limit] == 0 && flag==true) {
-                        printf("Process: P%d Arrival Time: %d Burst time: %d Waiting Time: %d Turnaround Time: %d\n",
-                               limit + 1, arrivalTimes[limit], burstTimes[limit],
-                               sum - arrivalTimes[limit] - burstTimes[limit], sum - arrivalTimes[limit]);
+                    if (remainingBurst[i] == 0 && flag == true) {
+
+                        waitingTimes[i] = sum - arrivalTimes[i]-burstTimes[i];
+                        turnAroundTimes[i] = sum - arrivalTimes[i];
 
                         flag=false;
-                        limit++;
+                        n++;
+                    }
+                    if(i == numProcesses) {
+                        i=0;
+                    } else if(arrivalTimes[i+1] <= sum) {
+                        i++;
+                    }else {
+                        i=0;
                     }
                 }
 
+                //output for each process in order
+                for(int i =0; i < numProcesses+1; i++){
+                    printf("Process: P%d Arrival Time: %d Burst time: %d Waiting Time: %d Turnaround Time: %d\n",i + 1, arrivalTimes[i], burstTimes[i],waitingTimes[i], turnAroundTimes[i]);
+                    sumTurnAroundTime = (sumTurnAroundTime + turnAroundTimes[i]);
+                    totalWaitTime = (totalWaitTime + waitingTimes[i]);
+                }
 
+                float numProcessForCalculation =numProcesses+1;
+
+                printf("\nTotal Turnaround Time: %d", sumTurnAroundTime);
+
+                avgWaitTime = totalWaitTime / numProcessForCalculation;
+                printf("\nAverage waiting time: %.2f", avgWaitTime);
+
+                avgTurnAroundTime = sumTurnAroundTime  /numProcessForCalculation;
+                printf("\nAverage turnaround time: %.2f\n\n", avgTurnAroundTime);
             }
             strToken = strtok(NULL, " ");
             lineOffSet++;
