@@ -76,6 +76,7 @@ int main() {
                 int sum = 0;
                 int n = 0;
                 bool flag = false;
+
                 //for every process in the test case
                 while ( n <correctNumProcesses) {
                     if (remainingBurst[i] <= timeQuantum && remainingBurst[i] > 0) {
