@@ -23,6 +23,7 @@ int main() {
     //make sure file is populated with data
     if (filePointer == NULL) {
         printf("File name invalid, could not open file");
+        return 0;
     }
     char testCase[5000];
 
@@ -60,7 +61,7 @@ int main() {
                 remainingBurst[numProcesses] = atoi(strToken);
             }
 
-            //time quantum
+            //time quantum - output step
             if (lineOffSet == 3) {
                 timeQuantum = atoi(strToken);
 
@@ -88,6 +89,7 @@ int main() {
                         remainingBurst[i] = remainingBurst[i] - timeQuantum;
                         sum = sum + timeQuantum;
                     }
+                    //process complete
                     if (remainingBurst[i] == 0 && flag == true) {
 
                         waitingTimes[i] = sum - arrivalTimes[i]-burstTimes[i];
@@ -112,8 +114,10 @@ int main() {
                     totalWaitTime = (totalWaitTime + waitingTimes[i]);
                 }
 
-                float numProcessForCalculation =numProcesses+1;
+                //convert to floating point for calculations
+                float numProcessForCalculation =correctNumProcesses;
 
+                //output totals and averages
                 printf("\nTotal Turnaround Time: %d", sumTurnAroundTime);
 
                 avgWaitTime = totalWaitTime / numProcessForCalculation;
@@ -122,11 +126,13 @@ int main() {
                 avgTurnAroundTime = sumTurnAroundTime  /numProcessForCalculation;
                 printf("\nAverage turnaround time: %.2f\n\n", avgTurnAroundTime);
             }
+            //next token increase offset by one
             strToken = strtok(NULL, " ");
             lineOffSet++;
         }
     }
 
+    //end of program close file pointer and file
     fclose(filePointer);
 
     return 0;
